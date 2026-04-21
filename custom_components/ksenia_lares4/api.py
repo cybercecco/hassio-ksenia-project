@@ -323,14 +323,22 @@ class LaresClient:
         uri = f"{'wss' if self._use_ssl else 'ws'}://{self._host}:{self._port}{WEBSOCKET_PATH}"
         ssl_ctx: ssl.SSLContext | None = None
         if self._use_ssl:
-            ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            # Ksenia panels ship legacy TLS 1.2 certs with renegotiation
+            # disabled server-side; matching the settings used by the
+            # reference driver/SDK yields the most reliable handshake.
+            ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
             ssl_ctx.check_hostname = False
             ssl_ctx.verify_mode = ssl.CERT_NONE
-            # Lares panels ship with legacy TLS certs.
             try:
                 ssl_ctx.options |= ssl.OP_LEGACY_SERVER_CONNECT  # type: ignore[attr-defined]
             except AttributeError:  # pragma: no cover - older Pythons
                 ssl_ctx.options |= 0x4
+            # Some panels use very short RSA keys; relax cipher rules so
+            # OpenSSL 3 doesn't drop the connection pre-handshake.
+            try:
+                ssl_ctx.set_ciphers("DEFAULT@SECLEVEL=0")
+            except ssl.SSLError:
+                _LOGGER.debug("Could not relax cipher level, using defaults")
 
         _LOGGER.debug("Connecting to Ksenia panel at %s", uri)
         try:
@@ -339,12 +347,31 @@ class LaresClient:
                 ssl=ssl_ctx,
                 subprotocols=[SUBPROTOCOL],
                 ping_interval=PING_INTERVAL,
-                ping_timeout=PING_INTERVAL,
+                # Some panels never reply to WebSocket pings; don't close
+                # the socket when that happens.
+                ping_timeout=None,
                 open_timeout=15,
                 max_size=4 * 1024 * 1024,
             )
-        except (OSError, websockets.InvalidURI, websockets.InvalidHandshake) as err:
+        except asyncio.TimeoutError as err:
+            raise LaresConnectionError(
+                f"Timed out opening WebSocket to {uri}"
+            ) from err
+        except (
+            OSError,
+            ssl.SSLError,
+            websockets.InvalidURI,
+            websockets.InvalidHandshake,
+            websockets.WebSocketException,
+        ) as err:
             raise LaresConnectionError(f"Could not connect to {uri}: {err}") from err
+        except Exception as err:  # pragma: no cover - defensive
+            # Anything else (import errors, TypeErrors from the ws lib
+            # version mismatch, …) becomes a connection error so the
+            # caller can distinguish it from auth failures.
+            raise LaresConnectionError(
+                f"Unexpected error opening WebSocket to {uri}: {err!r}"
+            ) from err
 
         # Authentication is the first frame on a new socket; do it before
         # starting the listener so we can observe the LOGIN_RES inline.

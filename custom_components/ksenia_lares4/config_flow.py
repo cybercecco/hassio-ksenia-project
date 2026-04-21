@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Any
 from urllib.parse import urlparse
@@ -151,6 +152,12 @@ class LaresConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 async def _async_test_connection(data: dict[str, Any]) -> str | None:
     """Attempt a throwaway connection and return an error slug (or ``None``)."""
+    _LOGGER.debug(
+        "Testing connection to Ksenia panel host=%s port=%s ssl=%s",
+        data.get(CONF_HOST),
+        data.get(CONF_PORT),
+        data.get(CONF_SSL, DEFAULT_SSL),
+    )
     client = LaresClient(
         host=data[CONF_HOST],
         pin=data[CONF_PIN],
@@ -161,15 +168,24 @@ async def _async_test_connection(data: dict[str, Any]) -> str | None:
     try:
         await client.start()
         if not await client.wait_ready(timeout=25):
+            _LOGGER.warning(
+                "Connection test: connected but initial snapshot timed out"
+            )
             return "timeout"
-    except LaresAuthError:
+    except LaresAuthError as err:
+        _LOGGER.warning("Connection test: authentication rejected (%s)", err)
         return "invalid_auth"
     except LaresConnectionError as err:
-        _LOGGER.warning("Connection test failed: %s", err)
+        _LOGGER.warning("Connection test: cannot connect (%s)", err)
         return "cannot_connect"
-    except Exception:  # pragma: no cover - defensive
-        _LOGGER.exception("Unexpected error during connection test")
-        return "unknown"
+    except asyncio.TimeoutError:
+        _LOGGER.warning("Connection test: timed out")
+        return "timeout"
+    except Exception as err:  # pragma: no cover - defensive
+        _LOGGER.exception(
+            "Connection test: unexpected %s — %s", type(err).__name__, err
+        )
+        return "cannot_connect"
     finally:
         try:
             await client.stop()
