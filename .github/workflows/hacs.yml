@@ -21,3 +21,6 @@ jobs:
         uses: hacs/action@main
         with:
           category: integration
+          # Brand assets require a separate PR to home-assistant/brands;
+          # skip this check until the integration is officially listed.
+          ignore: brands
