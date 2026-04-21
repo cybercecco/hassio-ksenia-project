@@ -1,5 +1,9 @@
 # Ksenia Lares 4.0 Gateway for Home Assistant
 
+[![hassfest](https://github.com/cybercecco/hassio-ksenia-project/actions/workflows/hassfest.yml/badge.svg)](https://github.com/cybercecco/hassio-ksenia-project/actions/workflows/hassfest.yml)
+[![HACS](https://github.com/cybercecco/hassio-ksenia-project/actions/workflows/hacs.yml/badge.svg)](https://github.com/cybercecco/hassio-ksenia-project/actions/workflows/hacs.yml)
+[![GitHub release](https://img.shields.io/github/v/release/cybercecco/hassio-ksenia-project?include_prereleases)](https://github.com/cybercecco/hassio-ksenia-project/releases)
+
 Un'integrazione custom (HACS-compatibile) che agisce da gateway fra una
 centrale di allarme **Ksenia Lares 4.0** e Home Assistant. Sfrutta il
 protocollo WebSocket ufficiale esposto dalla centrale (lo stesso usato
@@ -37,7 +41,8 @@ tempo reale.
 ### Tramite HACS (consigliato)
 
 1. Apri HACS → Integrazioni → ⋮ → *Custom repositories*.
-2. Aggiungi l'URL di questa repository (tipo: *Integration*).
+2. Aggiungi `https://github.com/cybercecco/hassio-ksenia-project` come
+   tipo *Integration*.
 3. Installa **Ksenia Lares 4.0 Gateway** e riavvia Home Assistant.
 
 ### Manuale

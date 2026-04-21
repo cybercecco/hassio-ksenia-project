@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Publish GitHub release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package integration
+        run: |
+          cd custom_components/ksenia_lares4
+          zip -r "../../ksenia_lares4-${GITHUB_REF_NAME}.zip" .
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ksenia_lares4-${{ github.ref_name }}.zip
+          generate_release_notes: true
