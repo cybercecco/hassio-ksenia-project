@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ksenia Lares 4.0 Gateway",
+        "description": "Enter the URL of your Ksenia Lares 4.0 control panel, the username (optional, for display purposes) and the PIN of the user that will be used by Home Assistant to interact with the panel.",
+        "data": {
+          "url": "Panel URL",
+          "username": "Username (optional)",
+          "pin": "User PIN"
+        },
+        "data_description": {
+          "url": "Examples: https://192.168.1.10, http://lares:80, 192.168.1.10",
+          "pin": "PIN code assigned to the Home Assistant user on the panel"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate Ksenia Lares 4.0",
+        "description": "The panel rejected the current credentials. Re-enter the PIN to continue.",
+        "data": {
+          "username": "Username (optional)",
+          "pin": "User PIN"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "The provided URL is not valid.",
+      "invalid_auth": "The panel rejected the PIN.",
+      "cannot_connect": "Cannot reach the panel. Check the URL, SSL settings and network access.",
+      "timeout": "Connected to the panel but it did not return the initial snapshot in time.",
+      "unknown": "Unexpected error while talking to the panel."
+    },
+    "abort": {
+      "already_configured": "This Ksenia Lares 4.0 panel is already configured.",
+      "reauth_successful": "Re-authentication successful."
+    }
+  },
+  "entity": {
+    "alarm_control_panel": {
+      "alarm_control_panel": {
+        "name": "Alarm"
+      }
+    },
+    "sensor": {
+      "partition": {
+        "state": {
+          "disarmed": "Disarmed",
+          "armed_away": "Armed away",
+          "armed_home": "Armed home",
+          "arming": "Arming",
+          "entry_delay": "Entry delay",
+          "exit_delay": "Exit delay",
+          "triggered": "Triggered"
+        }
+      },
+      "system_arm": {
+        "name": "Panel arm state",
+        "state": {
+          "disarmed": "Disarmed",
+          "armed_away": "Armed away",
+          "armed_home": "Armed home",
+          "arming": "Arming",
+          "entry_delay": "Entry delay",
+          "exit_delay": "Exit delay"
+        }
+      }
+    }
+  }
+}

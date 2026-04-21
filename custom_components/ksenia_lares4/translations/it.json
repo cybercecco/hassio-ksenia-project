@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Gateway Ksenia Lares 4.0",
+        "description": "Inserisci l'URL della centrale Ksenia Lares 4.0, il nome utente (facoltativo, a scopo descrittivo) e il PIN dell'utente che Home Assistant userà per interagire con la centrale.",
+        "data": {
+          "url": "URL della centrale",
+          "username": "Nome utente (opzionale)",
+          "pin": "PIN utente"
+        },
+        "data_description": {
+          "url": "Esempi: https://192.168.1.10, http://lares:80, 192.168.1.10",
+          "pin": "PIN assegnato all'utente dedicato a Home Assistant sulla centrale"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Ri-autenticazione Ksenia Lares 4.0",
+        "description": "La centrale ha rifiutato le credenziali correnti. Inserisci nuovamente il PIN per continuare.",
+        "data": {
+          "username": "Nome utente (opzionale)",
+          "pin": "PIN utente"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "L'URL inserito non è valido.",
+      "invalid_auth": "La centrale ha rifiutato il PIN.",
+      "cannot_connect": "Impossibile raggiungere la centrale. Controlla URL, SSL e accesso di rete.",
+      "timeout": "Connessione stabilita ma la centrale non ha fornito lo stato iniziale entro il timeout.",
+      "unknown": "Errore imprevisto durante la comunicazione con la centrale."
+    },
+    "abort": {
+      "already_configured": "Questa centrale Ksenia Lares 4.0 è già configurata.",
+      "reauth_successful": "Ri-autenticazione completata."
+    }
+  },
+  "entity": {
+    "alarm_control_panel": {
+      "alarm_control_panel": {
+        "name": "Allarme"
+      }
+    },
+    "sensor": {
+      "partition": {
+        "state": {
+          "disarmed": "Disinserita",
+          "armed_away": "Inserimento totale",
+          "armed_home": "Inserimento parziale",
+          "arming": "In inserimento",
+          "entry_delay": "Ritardo ingresso",
+          "exit_delay": "Ritardo uscita",
+          "triggered": "In allarme"
+        }
+      },
+      "system_arm": {
+        "name": "Stato centrale",
+        "state": {
+          "disarmed": "Disinserita",
+          "armed_away": "Inserimento totale",
+          "armed_home": "Inserimento parziale",
+          "arming": "In inserimento",
+          "entry_delay": "Ritardo ingresso",
+          "exit_delay": "Ritardo uscita"
+        }
+      }
+    }
+  }
+}
